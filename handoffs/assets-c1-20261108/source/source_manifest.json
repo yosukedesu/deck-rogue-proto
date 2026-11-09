@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "bundle": "C1",
+  "title": "幕2・幕3 遠景3層ずつ / 生成原本候補",
+  "date": "2026-11-08",
+  "branch": "codex/assets-c1-20261108",
+  "status": "source_candidates_not_production_ready",
+  "production_ready": false,
+  "requested_count": 6,
+  "generated_selected_count": 6,
+  "generator": "built-in imagegen",
+  "programmatic_image_edits": false,
+  "source_preservation": "Copied byte-identical PNG from imagegen output; no resampling/cropping/recoloring/alpha rewrite/seam correction.",
+  "format_blocker": "960x270 requested twice for Act2 far0; actual output remained2172x724. All six selected sources are2172x724. Opaque bases have nonzero left/right edge error.",
+  "sources": [
+    {
+      "path": "docs/dot-asset-backlog-2026-11-02.md",
+      "section": "C1",
+      "base_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66"
+    },
+    {
+      "path": "docs/art-bible.md"
+    },
+    {
+      "path": "docs/world.md"
+    },
+    {
+      "path": "docs/stage-hd2d/design-act2-synthesis.json"
+    },
+    {
+      "path": "docs/stage-hd2d/design-act3-synthesis.json"
+    },
+    {
+      "user_direction": "2026-11-05 UI night glass and brass replaces paper; later battle VFX need not be pixels. Scene assets remain HD-2D oriented."
+    }
+  ],
+  "assets": [
+    {
+      "id": "act2_far_0",
+      "file": "raw/act2/far_0_source.png",
+      "intended_import_path": "Art/stage/act2/far_0.png",
+      "role_ja": "遠い岩天井と青灰の坑内霞",
+      "source_dimensions": [
+        2172,
+        724
+      ],
+      "target_dimensions": [
+        960,
+        270
+      ],
+      "source_mode": "RGB",
+      "target_mode": "RGBA",
+      "alpha_mode": "opaque",
+      "draw_order": 0,
+      "sha256": "d9334d36f87ecf0c22435d21f02b98e7e58121e6765b7e1407c56a09935f29d9",
+      "production_ready": false,
+      "repeat_x_verified_exact": false,
+      "suggested_parallax_factor": 0.04,
+      "preview_opacity": 1,
+      "preview_values_status": "unverified_starting_points"
+    },
+    {
+      "id": "act2_far_1",
+      "file": "raw/act2/far_1_source.png",
+      "intended_import_path": "Art/stage/act2/far_1.png",
+      "role_ja": "坑木の支柱列と小さな暖色灯",
+      "source_dimensions": [
+        2172,
+        724
+      ],
+      "target_dimensions": [
+        960,
+        270
+      ],
+      "source_mode": "RGBA",
+      "target_mode": "RGBA",
+      "alpha_mode": "straight",
+      "draw_order": 1,
+      "sha256": "7ca51ee1bfc92e6d18321b89b84377996c6b47793df90e2aa805af05193d6b9b",
+      "production_ready": false,
+      "repeat_x_verified_exact": true,
+      "suggested_parallax_factor": 0.12,
+      "preview_opacity": 0.65,
+      "preview_values_status": "unverified_starting_points"
+    },
+    {
+      "id": "act2_far_2",
+      "file": "raw/act2/far_2_source.png",
+      "intended_import_path": "Art/stage/act2/far_2.png",
+      "role_ja": "下層を横切る薄い霧の素材",
+      "source_dimensions": [
+        2172,
+        724
+      ],
+      "target_dimensions": [
+        960,
+        270
+      ],
+      "source_mode": "RGBA",
+      "target_mode": "RGBA",
+      "alpha_mode": "straight",
+      "draw_order": 2,
+      "sha256": "9ed796b12cb64c995be0671d3a1554ebfdeee66fabee1fc7993dc4e11ca3f809",
+      "production_ready": false,
+      "repeat_x_verified_exact": true,
+      "suggested_parallax_factor": 0.21,
+      "preview_opacity": 1.0,
+      "preview_values_status": "unverified_starting_points"
+    },
+    {
+      "id": "act3_far_0",
+      "file": "raw/act3/far_0_source.png",
+      "intended_import_path": "Art/stage/act3/far_0.png",
+      "role_ja": "古代都市の天蓋と青緑の脈の地平",
+      "source_dimensions": [
+        2172,
+        724
+      ],
+      "target_dimensions": [
+        960,
+        270
+      ],
+      "source_mode": "RGB",
+      "target_mode": "RGBA",
+      "alpha_mode": "opaque",
+      "draw_order": 0,
+      "sha256": "e7239f9fdc9af8ea8c7b08a4e550deaae23038a2a3416386d12f2f64e6149285",
+      "production_ready": false,
+      "repeat_x_verified_exact": false,
+      "suggested_parallax_factor": 0.04,
+      "preview_opacity": 1,
+      "preview_values_status": "unverified_starting_points"
+    },
+    {
+      "id": "act3_far_1",
+      "file": "raw/act3/far_1_source.png",
+      "intended_import_path": "Art/stage/act3/far_1.png",
+      "role_ja": "遠い崩れた都市の輪郭",
+      "source_dimensions": [
+        2172,
+        724
+      ],
+      "target_dimensions": [
+        960,
+        270
+      ],
+      "source_mode": "RGBA",
+      "target_mode": "RGBA",
+      "alpha_mode": "straight",
+      "draw_order": 1,
+      "sha256": "0022ec8ab557c1a7a809711d1f542cb1d4870eed1702cc0dfe2ca92ee71cf197",
+      "production_ready": false,
+      "repeat_x_verified_exact": true,
+      "suggested_parallax_factor": 0.12,
+      "preview_opacity": 0.55,
+      "preview_values_status": "unverified_starting_points"
+    },
+    {
+      "id": "act3_far_2",
+      "file": "raw/act3/far_2_source.png",
+      "intended_import_path": "Art/stage/act3/far_2.png",
+      "role_ja": "少し手前の塔影と短い水道橋",
+      "source_dimensions": [
+        2172,
+        724
+      ],
+      "target_dimensions": [
+        960,
+        270
+      ],
+      "source_mode": "RGBA",
+      "target_mode": "RGBA",
+      "alpha_mode": "straight",
+      "draw_order": 2,
+      "sha256": "cef7ab3f59628d9c6103f027447cd0e5daa9e37b59e3bbc1897217c38f67ebe9",
+      "production_ready": false,
+      "repeat_x_verified_exact": true,
+      "suggested_parallax_factor": 0.21,
+      "preview_opacity": 0.82,
+      "preview_values_status": "unverified_starting_points"
+    }
+  ],
+  "validation": {
+    "pixel_read_and_hash": "passed",
+    "source_size_target": "failed_6_of_6",
+    "alpha_layer_presence": "passed_4_of_4",
+    "opaque_base_exact_horizontal_wrap": "failed_2_of_2",
+    "transparent_overlay_exact_horizontal_wrap": "passed_4_of_4",
+    "html_display_and_parallax": "not_run_chromium_socket_EPERM",
+    "game_engine_runtime": "not_run",
+    "android": "not_run",
+    "independent_visual_review": "qa/independent_review.md"
+  },
+  "do_not_import_as_final": true,
+  "forbidden_paths_changed": []
+}

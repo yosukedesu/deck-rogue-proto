@@ -1,0 +1,51 @@
+{
+  "renderer": "Pillow CPU / sRGB alpha composite, not game/GPU",
+  "frames": 240,
+  "fps": 20,
+  "duration_seconds": 12,
+  "camera_range": [
+    3600,
+    6468
+  ],
+  "camera_pixels_per_second": 240,
+  "layer_pixels_per_second": [
+    9.6,
+    28.799999999999997,
+    50.4
+  ],
+  "opacity": [
+    1,
+    0.65,
+    0.18
+  ],
+  "ground_diagnostic_occlusion_y": 248,
+  "consecutive_frame_mae_mean": 1.013556695206364,
+  "consecutive_frame_mae_max": 1.1752417695473252,
+  "all_frames_dimensions": true,
+  "video_end_note": "Linear test pans restart at the end; endpoint jump is not an asset seam.",
+  "wrap_tests": [
+    {
+      "layer": 0,
+      "period_px": 960,
+      "frame_at_0_equals_at_960": true,
+      "offset_959_to_0_is_one_pixel_roll": true
+    },
+    {
+      "layer": 1,
+      "period_px": 960,
+      "frame_at_0_equals_at_960": true,
+      "offset_959_to_0_is_one_pixel_roll": true
+    },
+    {
+      "layer": 2,
+      "period_px": 960,
+      "frame_at_0_equals_at_960": true,
+      "offset_959_to_0_is_one_pixel_roll": true
+    }
+  ],
+  "fog_composite_contribution": {
+    "max_channel_delta": 13.0,
+    "nonzero_pixels": 7539,
+    "mean_channel_delta": 0.08971064814814815
+  }
+}

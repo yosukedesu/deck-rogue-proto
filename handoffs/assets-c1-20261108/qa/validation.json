@@ -1,0 +1,363 @@
+{
+  "passed": 63,
+  "total": 63,
+  "all_pass": true,
+  "scope": "PNG files + CPU software composition and encoded motion preview. Not game, GPU, browser or Android.",
+  "checks": [
+    {
+      "name": "act2_far_0: original source byte preserved",
+      "passed": true,
+      "detail": "d9334d36f87ecf0c22435d21f02b98e7e58121e6765b7e1407c56a09935f29d9"
+    },
+    {
+      "name": "act2_far_1: original source byte preserved",
+      "passed": true,
+      "detail": "7ca51ee1bfc92e6d18321b89b84377996c6b47793df90e2aa805af05193d6b9b"
+    },
+    {
+      "name": "act2_far_2: original source byte preserved",
+      "passed": true,
+      "detail": "9ed796b12cb64c995be0671d3a1554ebfdeee66fabee1fc7993dc4e11ca3f809"
+    },
+    {
+      "name": "act3_far_0: original source byte preserved",
+      "passed": true,
+      "detail": "e7239f9fdc9af8ea8c7b08a4e550deaae23038a2a3416386d12f2f64e6149285"
+    },
+    {
+      "name": "act3_far_1: original source byte preserved",
+      "passed": true,
+      "detail": "0022ec8ab557c1a7a809711d1f542cb1d4870eed1702cc0dfe2ca92ee71cf197"
+    },
+    {
+      "name": "act3_far_2: original source byte preserved",
+      "passed": true,
+      "detail": "cef7ab3f59628d9c6103f027447cd0e5daa9e37b59e3bbc1897217c38f67ebe9"
+    },
+    {
+      "name": "act2_far_0: size",
+      "passed": true,
+      "detail": [
+        960,
+        270
+      ]
+    },
+    {
+      "name": "act2_far_0: RGBA",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_0: RGBA endpoint equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_0: hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_0: opaque base",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_0: seam-adjacent RGB delta max <= 8",
+      "passed": true,
+      "detail": {
+        "max": 2.0,
+        "mean": 0.39609053497942387
+      }
+    },
+    {
+      "name": "act2_far_1: size",
+      "passed": true,
+      "detail": [
+        960,
+        270
+      ]
+    },
+    {
+      "name": "act2_far_1: RGBA",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_1: RGBA endpoint equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_1: hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_1: real transparency",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_1: fully transparent LR columns",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_1: zero hidden RGB",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_2: size",
+      "passed": true,
+      "detail": [
+        960,
+        270
+      ]
+    },
+    {
+      "name": "act2_far_2: RGBA",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_2: RGBA endpoint equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_2: hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_2: real transparency",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_2: fully transparent LR columns",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act2_far_2: zero hidden RGB",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_0: size",
+      "passed": true,
+      "detail": [
+        960,
+        270
+      ]
+    },
+    {
+      "name": "act3_far_0: RGBA",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_0: RGBA endpoint equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_0: hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_0: opaque base",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_0: seam-adjacent RGB delta max <= 8",
+      "passed": true,
+      "detail": {
+        "max": 2.0,
+        "mean": 0.4096707818930041
+      }
+    },
+    {
+      "name": "act3_far_1: size",
+      "passed": true,
+      "detail": [
+        960,
+        270
+      ]
+    },
+    {
+      "name": "act3_far_1: RGBA",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_1: RGBA endpoint equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_1: hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_1: real transparency",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_1: fully transparent LR columns",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_1: zero hidden RGB",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_2: size",
+      "passed": true,
+      "detail": [
+        960,
+        270
+      ]
+    },
+    {
+      "name": "act3_far_2: RGBA",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_2: RGBA endpoint equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_2: hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_2: real transparency",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_2: fully transparent LR columns",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "act3_far_2: zero hidden RGB",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act2: all rendered frames native size",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act2: 240 simulated frames",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act2/far0: periodic samples",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act2/far1: periodic samples",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act2/far2: periodic samples",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act2: encoded preview frame count",
+      "passed": true,
+      "detail": {
+        "width": 960,
+        "height": 270,
+        "r_frame_rate": "20/1",
+        "duration": "12.000000",
+        "nb_read_frames": "240"
+      }
+    },
+    {
+      "name": "Act2: encoded dimensions",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act2: encoded fps",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act3: all rendered frames native size",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act3: 240 simulated frames",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act3/far0: periodic samples",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act3/far1: periodic samples",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act3/far2: periodic samples",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act3: encoded preview frame count",
+      "passed": true,
+      "detail": {
+        "width": 960,
+        "height": 270,
+        "r_frame_rate": "20/1",
+        "duration": "12.000000",
+        "nb_read_frames": "240"
+      }
+    },
+    {
+      "name": "Act3: encoded dimensions",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act3: encoded fps",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Act2: corrected fog lightens not blackens backdrop",
+      "passed": true,
+      "detail": {
+        "min_luma_delta": -0.14040000000000002,
+        "max_luma_delta": 12.2126,
+        "changed_pixels": 7539
+      }
+    }
+  ]
+}
