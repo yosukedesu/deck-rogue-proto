@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 2,
+  "bundle": "C4",
+  "date": "2026-11-08",
+  "repository": "yosukedesu/deck-rogue-proto",
+  "branch": "codex/assets-c4-20261108",
+  "referenceCommit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "status": "final_size_assets_ready_for_import_not_integrated",
+  "readyForImport": true,
+  "finalAssetCount": 3,
+  "format": "PNG RGB opaque",
+  "size": [
+    400,
+    224
+  ],
+  "generation": "built-in imagegen originals; user-authorized programmatic size normalization",
+  "processingSoftware": {
+    "name": "Pillow",
+    "version": "13.0.0"
+  },
+  "pixelStyleDisclosure": "Generated pixel-style illustrations normalized to 400x224. Not native hand-drawn pixel masters; source palette and grain differ from legacy low-color assets.",
+  "resamplingDecision": "BOX selected after independent native-size comparison with NEAREST and LANCZOS; avoids broken/specular rail speckles in C4 act2 without extra sharpening.",
+  "handoffPath": "handoffs/assets-c4-act-covers",
+  "assets": [
+    {
+      "id": "bd_act1",
+      "act": 1,
+      "file": "assets/Art/scenes/bd_act1.png",
+      "sourceFile": "raw/bd_act1_source.png",
+      "targetFile": "unity/Assets/Resources/Art/scenes/bd_act1.png",
+      "size": [
+        400,
+        224
+      ],
+      "width": 400,
+      "height": 224,
+      "mode": "RGB",
+      "format": "PNG",
+      "distinctColors": 16050,
+      "alpha": "opaque",
+      "bytes": 115077,
+      "sha256": "8e4b9ea389fc6bc2256fe21a28efe8d0bcdc39ddd11338e969fe69c11f0a5983",
+      "source": {
+        "width": 1676,
+        "height": 938,
+        "mode": "RGB",
+        "format": "PNG",
+        "distinctColors": 81131,
+        "alpha": "opaque",
+        "bytes": 1561664,
+        "sha256": "e195cc2213528d56a59755ce339e740ec203c3f9176a673f7f4870f5a107a354"
+      },
+      "readyForImport": true,
+      "nativeHandDrawnPixelArt": false,
+      "processing": {
+        "operation": "resize only",
+        "resampling": "Pillow BOX",
+        "crop": false,
+        "paletteReduction": false,
+        "dithering": false,
+        "paintOver": false,
+        "aspectDistortionPercent": 0.059701
+      },
+      "integrationPerformed": false,
+      "runtimeVerified": false,
+      "usage": "act_intro_background",
+      "title": "坑口の森",
+      "proposedQuietTextRect": [
+        80,
+        72,
+        320,
+        140
+      ],
+      "textBakedIn": false,
+      "quietTextRectRuntimeVerified": false
+    },
+    {
+      "id": "bd_act2",
+      "act": 2,
+      "file": "assets/Art/scenes/bd_act2.png",
+      "sourceFile": "raw/bd_act2_source.png",
+      "targetFile": "unity/Assets/Resources/Art/scenes/bd_act2.png",
+      "size": [
+        400,
+        224
+      ],
+      "width": 400,
+      "height": 224,
+      "mode": "RGB",
+      "format": "PNG",
+      "distinctColors": 14959,
+      "alpha": "opaque",
+      "bytes": 111573,
+      "sha256": "e25e69055677aae25fa509d974f4b4fd1c2c231b36e777104ce8523196d0d28c",
+      "source": {
+        "width": 1676,
+        "height": 939,
+        "mode": "RGB",
+        "format": "PNG",
+        "distinctColors": 92578,
+        "alpha": "opaque",
+        "bytes": 1652663,
+        "sha256": "71fdf902c5664232b51e340834bc2b79481b9d92d05a0e766285a3e8f149ebb7"
+      },
+      "readyForImport": true,
+      "nativeHandDrawnPixelArt": false,
+      "processing": {
+        "operation": "resize only",
+        "resampling": "Pillow BOX",
+        "crop": false,
+        "paletteReduction": false,
+        "dithering": false,
+        "paintOver": false,
+        "aspectDistortionPercent": 0.046858
+      },
+      "integrationPerformed": false,
+      "runtimeVerified": false,
+      "usage": "act_intro_background",
+      "title": "先代の坑道",
+      "proposedQuietTextRect": [
+        80,
+        72,
+        320,
+        140
+      ],
+      "textBakedIn": false,
+      "quietTextRectRuntimeVerified": false
+    },
+    {
+      "id": "bd_act3",
+      "act": 3,
+      "file": "assets/Art/scenes/bd_act3.png",
+      "sourceFile": "raw/bd_act3_source.png",
+      "targetFile": "unity/Assets/Resources/Art/scenes/bd_act3.png",
+      "size": [
+        400,
+        224
+      ],
+      "width": 400,
+      "height": 224,
+      "mode": "RGB",
+      "format": "PNG",
+      "distinctColors": 19676,
+      "alpha": "opaque",
+      "bytes": 120498,
+      "sha256": "3403d3ca6ca8352c3928416e1b1a3cf22c8e9a09d29a3f52b914de2c56f166d5",
+      "source": {
+        "width": 1676,
+        "height": 938,
+        "mode": "RGB",
+        "format": "PNG",
+        "distinctColors": 107598,
+        "alpha": "opaque",
+        "bytes": 1762420,
+        "sha256": "0d96a76dc2ea54c0f1f60afca8e9684e5ecb9468753a15936bebf8c0ceca974d"
+      },
+      "readyForImport": true,
+      "nativeHandDrawnPixelArt": false,
+      "processing": {
+        "operation": "resize only",
+        "resampling": "Pillow BOX",
+        "crop": false,
+        "paletteReduction": false,
+        "dithering": false,
+        "paintOver": false,
+        "aspectDistortionPercent": 0.059701
+      },
+      "integrationPerformed": false,
+      "runtimeVerified": false,
+      "usage": "act_intro_background",
+      "title": "埋もれた古代都市",
+      "proposedQuietTextRect": [
+        80,
+        72,
+        320,
+        140
+      ],
+      "textBakedIn": false,
+      "quietTextRectRuntimeVerified": false
+    }
+  ],
+  "qa": {
+    "technical": "qa/technical.json",
+    "independentVisual": "qa/INDEPENDENT_FINAL_SIZE_QA.md",
+    "contactSheet": "qa/contactsheet_native.png",
+    "referenceComparison": "qa/reference_comparison.png",
+    "nativeSize": true,
+    "sourceComparison": true,
+    "referenceComparisonPerformed": true,
+    "titleOverlayProof": "qa/title_overlay_cover_proof.png",
+    "runtimeVerified": false,
+    "androidVerified": false
+  },
+  "publication": {
+    "state": "not_published",
+    "note": "Existing branch is identical to main. Earlier connector approval status unresolved; no bypass attempted."
+  },
+  "integrationPerformed": false,
+  "notChanged": [
+    "portraits",
+    "BGM",
+    "key visual",
+    "src/engine",
+    "src/data",
+    "Unity code",
+    "Art/bg/actN",
+    "Art/scenes/bd_title.png"
+  ]
+}

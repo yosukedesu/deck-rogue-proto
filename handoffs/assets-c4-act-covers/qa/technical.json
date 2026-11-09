@@ -1,0 +1,45 @@
+{
+  "assetCount": 3,
+  "checks": [
+    {
+      "test": "bd_act1 exact dimensions",
+      "passed": true
+    },
+    {
+      "test": "bd_act1 valid opaque RGB PNG",
+      "passed": true
+    },
+    {
+      "test": "bd_act1 source preserved byte-for-byte",
+      "passed": true
+    },
+    {
+      "test": "bd_act2 exact dimensions",
+      "passed": true
+    },
+    {
+      "test": "bd_act2 valid opaque RGB PNG",
+      "passed": true
+    },
+    {
+      "test": "bd_act2 source preserved byte-for-byte",
+      "passed": true
+    },
+    {
+      "test": "bd_act3 exact dimensions",
+      "passed": true
+    },
+    {
+      "test": "bd_act3 valid opaque RGB PNG",
+      "passed": true
+    },
+    {
+      "test": "bd_act3 source preserved byte-for-byte",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "numberOfChecks": 9,
+  "runtimeTested": false,
+  "androidTested": false
+}
