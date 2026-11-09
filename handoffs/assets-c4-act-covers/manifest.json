@@ -192,8 +192,10 @@
     "androidVerified": false
   },
   "publication": {
-    "state": "not_published",
-    "note": "Existing branch is identical to main. Earlier connector approval status unresolved; no bypass attempted."
+    "state": "published",
+    "initialAssetCommit": "6320a967a44c4356d027880f2f944fcd0c539ee5",
+    "gameIntegrationVerified": false,
+    "date": "2026-11-09"
   },
   "integrationPerformed": false,
   "notChanged": [
