@@ -1,0 +1,339 @@
+{
+  "schemaVersion": 2,
+  "bundle": "C3",
+  "date": "2026-11-08",
+  "repository": "yosukedesu/deck-rogue-proto",
+  "branch": "codex/assets-c3-20261108",
+  "referenceCommit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "status": "final_size_assets_ready_for_import_not_integrated",
+  "readyForImport": true,
+  "finalAssetCount": 6,
+  "format": "PNG RGB opaque",
+  "size": [
+    400,
+    224
+  ],
+  "generation": "built-in imagegen originals; user-authorized programmatic size normalization",
+  "processingSoftware": {
+    "name": "Pillow",
+    "version": "13.0.0"
+  },
+  "pixelStyleDisclosure": "Generated pixel-style illustrations normalized to 400x224. Not native hand-drawn pixel masters; source palette and grain differ from legacy low-color assets.",
+  "resamplingDecision": "BOX selected after independent native-size comparison with NEAREST and LANCZOS; avoids broken/specular rail speckles in C4 act2 without extra sharpening.",
+  "handoffPath": "handoffs/assets-c3-act23-facilities",
+  "assets": [
+    {
+      "id": "bd_campfire_act2",
+      "act": 2,
+      "file": "assets/Art/scenes/bd_campfire_act2.png",
+      "sourceFile": "raw/bd_campfire_act2_source.png",
+      "targetFile": "unity/Assets/Resources/Art/scenes/bd_campfire_act2.png",
+      "size": [
+        400,
+        224
+      ],
+      "width": 400,
+      "height": 224,
+      "mode": "RGB",
+      "format": "PNG",
+      "distinctColors": 9050,
+      "alpha": "opaque",
+      "bytes": 91819,
+      "sha256": "5251416fabb8a369f016ddde857cc0be7c742adb34ce709da5d909b706255483",
+      "source": {
+        "width": 1676,
+        "height": 938,
+        "mode": "RGB",
+        "format": "PNG",
+        "distinctColors": 53905,
+        "alpha": "opaque",
+        "bytes": 1414118,
+        "sha256": "ba87664b4dfb6680ea1fc105b517893dabeab2a1af308d37e6809c082476c094"
+      },
+      "readyForImport": true,
+      "nativeHandDrawnPixelArt": false,
+      "processing": {
+        "operation": "resize only",
+        "resampling": "Pillow BOX",
+        "crop": false,
+        "paletteReduction": false,
+        "dithering": false,
+        "paintOver": false,
+        "aspectDistortionPercent": 0.059701
+      },
+      "integrationPerformed": false,
+      "runtimeVerified": false,
+      "scene": "campfire",
+      "proposedFireOverlayAnchor": {
+        "coordinateSpace": "400x224 top-left, x right / y down",
+        "flameCenter": [
+          196,
+          162
+        ],
+        "fireBase": [
+          197,
+          175
+        ],
+        "measuredVisually": true,
+        "runtimeValidated": false,
+        "note": "Baked-in flame already exists. Suggested starting points only; do not reuse legacy (205,178)."
+      }
+    },
+    {
+      "id": "bd_campfire_act3",
+      "act": 3,
+      "file": "assets/Art/scenes/bd_campfire_act3.png",
+      "sourceFile": "raw/bd_campfire_act3_source.png",
+      "targetFile": "unity/Assets/Resources/Art/scenes/bd_campfire_act3.png",
+      "size": [
+        400,
+        224
+      ],
+      "width": 400,
+      "height": 224,
+      "mode": "RGB",
+      "format": "PNG",
+      "distinctColors": 11513,
+      "alpha": "opaque",
+      "bytes": 95264,
+      "sha256": "a067ad60a038af3b5717d5b9a4902e57f317f0b23ccf4c16161ff6298d28b507",
+      "source": {
+        "width": 1676,
+        "height": 938,
+        "mode": "RGB",
+        "format": "PNG",
+        "distinctColors": 68653,
+        "alpha": "opaque",
+        "bytes": 1447519,
+        "sha256": "ca2c17e2322609bce58c452b792239b0a05609f51511859af33349d0cf2dd9d0"
+      },
+      "readyForImport": true,
+      "nativeHandDrawnPixelArt": false,
+      "processing": {
+        "operation": "resize only",
+        "resampling": "Pillow BOX",
+        "crop": false,
+        "paletteReduction": false,
+        "dithering": false,
+        "paintOver": false,
+        "aspectDistortionPercent": 0.059701
+      },
+      "integrationPerformed": false,
+      "runtimeVerified": false,
+      "scene": "campfire",
+      "proposedFireOverlayAnchor": {
+        "coordinateSpace": "400x224 top-left, x right / y down",
+        "flameCenter": [
+          202,
+          151
+        ],
+        "fireBase": [
+          201,
+          165
+        ],
+        "measuredVisually": true,
+        "runtimeValidated": false,
+        "note": "Baked-in flame already exists. Suggested starting points only; do not reuse legacy (205,178)."
+      }
+    },
+    {
+      "id": "bd_shop_act2",
+      "act": 2,
+      "file": "assets/Art/scenes/bd_shop_act2.png",
+      "sourceFile": "raw/bd_shop_act2_source.png",
+      "targetFile": "unity/Assets/Resources/Art/scenes/bd_shop_act2.png",
+      "size": [
+        400,
+        224
+      ],
+      "width": 400,
+      "height": 224,
+      "mode": "RGB",
+      "format": "PNG",
+      "distinctColors": 11502,
+      "alpha": "opaque",
+      "bytes": 100804,
+      "sha256": "93949e8a0591ff651d4ad2372705a53b70ae11df7dfefd50b62741b57ce74292",
+      "source": {
+        "width": 1676,
+        "height": 938,
+        "mode": "RGB",
+        "format": "PNG",
+        "distinctColors": 62855,
+        "alpha": "opaque",
+        "bytes": 1499095,
+        "sha256": "befac9808927f0cd0a5417462f4a51c5d8044b2567b715c9ae89dd78d9dddae6"
+      },
+      "readyForImport": true,
+      "nativeHandDrawnPixelArt": false,
+      "processing": {
+        "operation": "resize only",
+        "resampling": "Pillow BOX",
+        "crop": false,
+        "paletteReduction": false,
+        "dithering": false,
+        "paintOver": false,
+        "aspectDistortionPercent": 0.059701
+      },
+      "integrationPerformed": false,
+      "runtimeVerified": false,
+      "scene": "shop"
+    },
+    {
+      "id": "bd_shop_act3",
+      "act": 3,
+      "file": "assets/Art/scenes/bd_shop_act3.png",
+      "sourceFile": "raw/bd_shop_act3_source.png",
+      "targetFile": "unity/Assets/Resources/Art/scenes/bd_shop_act3.png",
+      "size": [
+        400,
+        224
+      ],
+      "width": 400,
+      "height": 224,
+      "mode": "RGB",
+      "format": "PNG",
+      "distinctColors": 14327,
+      "alpha": "opaque",
+      "bytes": 96664,
+      "sha256": "de2cefd53c5918d3fb238b57a13d938d5c8eb0524250026f9fb91f4e50e014cb",
+      "source": {
+        "width": 1676,
+        "height": 938,
+        "mode": "RGB",
+        "format": "PNG",
+        "distinctColors": 78994,
+        "alpha": "opaque",
+        "bytes": 1541564,
+        "sha256": "9724e7660a4226c7f278ecf26f5902761f0bac6da6b2fe0fb7d8930d3674c21e"
+      },
+      "readyForImport": true,
+      "nativeHandDrawnPixelArt": false,
+      "processing": {
+        "operation": "resize only",
+        "resampling": "Pillow BOX",
+        "crop": false,
+        "paletteReduction": false,
+        "dithering": false,
+        "paintOver": false,
+        "aspectDistortionPercent": 0.059701
+      },
+      "integrationPerformed": false,
+      "runtimeVerified": false,
+      "scene": "shop"
+    },
+    {
+      "id": "bd_workshop_act2",
+      "act": 2,
+      "file": "assets/Art/scenes/bd_workshop_act2.png",
+      "sourceFile": "raw/bd_workshop_act2_source.png",
+      "targetFile": "unity/Assets/Resources/Art/scenes/bd_workshop_act2.png",
+      "size": [
+        400,
+        224
+      ],
+      "width": 400,
+      "height": 224,
+      "mode": "RGB",
+      "format": "PNG",
+      "distinctColors": 14958,
+      "alpha": "opaque",
+      "bytes": 114801,
+      "sha256": "bef6975b2d85edb5e5838cce3bfa56bbd5826bf7c70c6c73a6a8be8bc0c3774e",
+      "source": {
+        "width": 1676,
+        "height": 938,
+        "mode": "RGB",
+        "format": "PNG",
+        "distinctColors": 83973,
+        "alpha": "opaque",
+        "bytes": 1565831,
+        "sha256": "698e0fd9b63ec70698593952277a75a1bde2b4ae329816752dadfbeb45f5bb47"
+      },
+      "readyForImport": true,
+      "nativeHandDrawnPixelArt": false,
+      "processing": {
+        "operation": "resize only",
+        "resampling": "Pillow BOX",
+        "crop": false,
+        "paletteReduction": false,
+        "dithering": false,
+        "paintOver": false,
+        "aspectDistortionPercent": 0.059701
+      },
+      "integrationPerformed": false,
+      "runtimeVerified": false,
+      "scene": "workshop"
+    },
+    {
+      "id": "bd_workshop_act3",
+      "act": 3,
+      "file": "assets/Art/scenes/bd_workshop_act3.png",
+      "sourceFile": "raw/bd_workshop_act3_source.png",
+      "targetFile": "unity/Assets/Resources/Art/scenes/bd_workshop_act3.png",
+      "size": [
+        400,
+        224
+      ],
+      "width": 400,
+      "height": 224,
+      "mode": "RGB",
+      "format": "PNG",
+      "distinctColors": 18662,
+      "alpha": "opaque",
+      "bytes": 110799,
+      "sha256": "415605153ddc3e24bc19f4a7b6dbebafda4b8ca0df8ae734692e47c2aee0982b",
+      "source": {
+        "width": 1676,
+        "height": 938,
+        "mode": "RGB",
+        "format": "PNG",
+        "distinctColors": 110157,
+        "alpha": "opaque",
+        "bytes": 1597944,
+        "sha256": "0780a48934e52fc5bec83a18a976b9d736e9f34a099c5f4ecc18977dae0dce3d"
+      },
+      "readyForImport": true,
+      "nativeHandDrawnPixelArt": false,
+      "processing": {
+        "operation": "resize only",
+        "resampling": "Pillow BOX",
+        "crop": false,
+        "paletteReduction": false,
+        "dithering": false,
+        "paintOver": false,
+        "aspectDistortionPercent": 0.059701
+      },
+      "integrationPerformed": false,
+      "runtimeVerified": false,
+      "scene": "workshop"
+    }
+  ],
+  "qa": {
+    "technical": "qa/technical.json",
+    "independentVisual": "qa/INDEPENDENT_FINAL_SIZE_QA.md",
+    "contactSheet": "qa/contactsheet_native.png",
+    "referenceComparison": "qa/reference_comparison.png",
+    "nativeSize": true,
+    "sourceComparison": true,
+    "referenceComparisonPerformed": true,
+    "titleOverlayProof": null,
+    "runtimeVerified": false,
+    "androidVerified": false
+  },
+  "publication": {
+    "state": "not_published",
+    "note": "Existing branch is identical to main. Earlier connector approval status unresolved; no bypass attempted."
+  },
+  "integrationPerformed": false,
+  "notChanged": [
+    "portraits",
+    "BGM",
+    "key visual",
+    "src/engine",
+    "src/data",
+    "Unity code",
+    "Art/bg/actN",
+    "Art/scenes/bd_title.png"
+  ]
+}
