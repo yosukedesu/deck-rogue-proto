@@ -1,0 +1,106 @@
+{
+  "all_pass": true,
+  "runtime_tested": false,
+  "checks": [
+    {
+      "path": "Art/fx/gear_guard_8f.png",
+      "size": [
+        512,
+        64
+      ],
+      "mode": "RGBA",
+      "sha256": "9a588687e3338bf06cb66aaa66f5a9166f29e8a86e07a1b734ead6091b60347d",
+      "pass": true
+    },
+    {
+      "path": "Art/fx/gear_restore_8f.png",
+      "size": [
+        512,
+        64
+      ],
+      "mode": "RGBA",
+      "sha256": "66bbabfe6930db49522e8e08ac73c2e0cf058a8c3eb10e84a0b4261b00a401d7",
+      "pass": true
+    },
+    {
+      "path": "Art/fx/gear_strike_8f.png",
+      "size": [
+        512,
+        64
+      ],
+      "mode": "RGBA",
+      "sha256": "1633d09132ccb08325e9d13f3bf82041d7eb004208b816dff8579eed85248236",
+      "pass": true
+    },
+    {
+      "path": "Art/fx/gear_stop_8f.png",
+      "size": [
+        512,
+        64
+      ],
+      "mode": "RGBA",
+      "sha256": "66bbd3578db7924180a904a08a6edfe668691b2123610c22b1e3879560bbb231",
+      "pass": true
+    },
+    {
+      "path": "Art/fx/gear_field_8f.png",
+      "size": [
+        512,
+        64
+      ],
+      "mode": "RGBA",
+      "sha256": "74ace8168bb6285755739e89fdcd963a374e2fbdda120448ccfde1077f7b9bf4",
+      "pass": true
+    },
+    {
+      "path": "Art/fx/gear_edged_8f.png",
+      "size": [
+        512,
+        64
+      ],
+      "mode": "RGBA",
+      "sha256": "64bee9dc95581c86ddd15c21c1df6a515ae0a520f21843f8ce56846d583994a8",
+      "pass": true
+    },
+    {
+      "path": "Art/ui/gear_box_0.png",
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "sha256": "713db31adb48b542d7c5b8da38328be111a49d4448a4ad2435a62d61101d062e",
+      "pass": true
+    },
+    {
+      "path": "Art/ui/gear_box_1.png",
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "sha256": "2fe36a62c9fc777e312311819bf6be31228785f502479b399068a34cb29cbe17",
+      "pass": true
+    },
+    {
+      "path": "Art/ui/gear_box_2.png",
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "sha256": "dfe4bb945d9121d2b840af78393d9f7f489dcc7dc67a0bd762ebe3c7de68e8b4",
+      "pass": true
+    },
+    {
+      "path": "Art/ui/gear_box_3.png",
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "sha256": "128aceae37339dd916658eeeaad22816f9cbcd055467bf622504c0dfa9047233",
+      "pass": true
+    }
+  ]
+}

@@ -1,0 +1,1056 @@
+{
+  "schema_version": 1,
+  "production": {
+    "frame_size_px": [
+      64,
+      64
+    ],
+    "layout": "single row, left to right, zero-based",
+    "pixel_format": "RGBA8",
+    "alpha_values": [
+      0,
+      255
+    ],
+    "filter": "nearest",
+    "mipmaps": false,
+    "blend_mode": "normal alpha",
+    "trim": false,
+    "rotate_atlas_cells": false,
+    "palette": "palette.json",
+    "transparent_margin_min_px": 4,
+    "scaling": "same shared logical pixel scale; uniform scaling only"
+  },
+  "assets": [
+    {
+      "key": "guard",
+      "label_ja": "守る",
+      "description_ja": "留め金から盾が開き、固定する",
+      "path": "Art/fx/gear_guard_8f.png",
+      "size_px": [
+        512,
+        64
+      ],
+      "sha256": "9a588687e3338bf06cb66aaa66f5a9166f29e8a86e07a1b734ead6091b60347d",
+      "anchor_px": [
+        32,
+        32
+      ],
+      "frame_count": 8,
+      "frames": [
+        {
+          "index": 0,
+          "rect_px": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 0,
+          "duration_ms": 55,
+          "bbox_local_px": [
+            25,
+            25,
+            40,
+            40
+          ]
+        },
+        {
+          "index": 1,
+          "rect_px": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 55,
+          "duration_ms": 60,
+          "bbox_local_px": [
+            22,
+            15,
+            43,
+            50
+          ]
+        },
+        {
+          "index": 2,
+          "rect_px": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 115,
+          "duration_ms": 70,
+          "bbox_local_px": [
+            17,
+            15,
+            48,
+            50
+          ]
+        },
+        {
+          "index": 3,
+          "rect_px": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 185,
+          "duration_ms": 85,
+          "bbox_local_px": [
+            13,
+            15,
+            52,
+            50
+          ]
+        },
+        {
+          "index": 4,
+          "rect_px": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 270,
+          "duration_ms": 80,
+          "bbox_local_px": [
+            12,
+            15,
+            53,
+            51
+          ]
+        },
+        {
+          "index": 5,
+          "rect_px": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 350,
+          "duration_ms": 80,
+          "bbox_local_px": [
+            10,
+            10,
+            55,
+            54
+          ]
+        },
+        {
+          "index": 6,
+          "rect_px": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 430,
+          "duration_ms": 75,
+          "bbox_local_px": [
+            8,
+            8,
+            57,
+            56
+          ]
+        },
+        {
+          "index": 7,
+          "rect_px": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 505,
+          "duration_ms": 65,
+          "bbox_local_px": null
+        }
+      ],
+      "total_duration_ms": 570,
+      "loop": false,
+      "clear_frame_index": 7,
+      "clear_on_finish": true,
+      "visual_only": true
+    },
+    {
+      "key": "restore",
+      "label_ja": "戻す",
+      "description_ja": "逆巻く輪から上向きの光が戻る",
+      "path": "Art/fx/gear_restore_8f.png",
+      "size_px": [
+        512,
+        64
+      ],
+      "sha256": "66bbabfe6930db49522e8e08ac73c2e0cf058a8c3eb10e84a0b4261b00a401d7",
+      "anchor_px": [
+        32,
+        32
+      ],
+      "frame_count": 8,
+      "frames": [
+        {
+          "index": 0,
+          "rect_px": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 0,
+          "duration_ms": 55,
+          "bbox_local_px": [
+            25,
+            25,
+            40,
+            40
+          ]
+        },
+        {
+          "index": 1,
+          "rect_px": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 55,
+          "duration_ms": 60,
+          "bbox_local_px": [
+            21,
+            21,
+            44,
+            43
+          ]
+        },
+        {
+          "index": 2,
+          "rect_px": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 115,
+          "duration_ms": 70,
+          "bbox_local_px": [
+            17,
+            17,
+            48,
+            46
+          ]
+        },
+        {
+          "index": 3,
+          "rect_px": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 185,
+          "duration_ms": 85,
+          "bbox_local_px": [
+            14,
+            14,
+            51,
+            50
+          ]
+        },
+        {
+          "index": 4,
+          "rect_px": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 270,
+          "duration_ms": 80,
+          "bbox_local_px": [
+            12,
+            12,
+            53,
+            53
+          ]
+        },
+        {
+          "index": 5,
+          "rect_px": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 350,
+          "duration_ms": 80,
+          "bbox_local_px": [
+            10,
+            7,
+            55,
+            55
+          ]
+        },
+        {
+          "index": 6,
+          "rect_px": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 430,
+          "duration_ms": 75,
+          "bbox_local_px": [
+            6,
+            17,
+            44,
+            57
+          ]
+        },
+        {
+          "index": 7,
+          "rect_px": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 505,
+          "duration_ms": 65,
+          "bbox_local_px": null
+        }
+      ],
+      "total_duration_ms": 570,
+      "loop": false,
+      "clear_frame_index": 7,
+      "clear_on_finish": true,
+      "visual_only": true
+    },
+    {
+      "key": "strike",
+      "label_ja": "倒す",
+      "description_ja": "真鍮の芯から鋭い橙の放射が開く",
+      "path": "Art/fx/gear_strike_8f.png",
+      "size_px": [
+        512,
+        64
+      ],
+      "sha256": "1633d09132ccb08325e9d13f3bf82041d7eb004208b816dff8579eed85248236",
+      "anchor_px": [
+        32,
+        32
+      ],
+      "frame_count": 8,
+      "frames": [
+        {
+          "index": 0,
+          "rect_px": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 0,
+          "duration_ms": 55,
+          "bbox_local_px": [
+            25,
+            25,
+            40,
+            40
+          ]
+        },
+        {
+          "index": 1,
+          "rect_px": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 55,
+          "duration_ms": 60,
+          "bbox_local_px": [
+            22,
+            22,
+            43,
+            43
+          ]
+        },
+        {
+          "index": 2,
+          "rect_px": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 115,
+          "duration_ms": 70,
+          "bbox_local_px": [
+            11,
+            11,
+            54,
+            54
+          ]
+        },
+        {
+          "index": 3,
+          "rect_px": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 185,
+          "duration_ms": 85,
+          "bbox_local_px": [
+            7,
+            7,
+            58,
+            58
+          ]
+        },
+        {
+          "index": 4,
+          "rect_px": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 270,
+          "duration_ms": 80,
+          "bbox_local_px": [
+            9,
+            9,
+            56,
+            56
+          ]
+        },
+        {
+          "index": 5,
+          "rect_px": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 350,
+          "duration_ms": 80,
+          "bbox_local_px": [
+            11,
+            10,
+            55,
+            54
+          ]
+        },
+        {
+          "index": 6,
+          "rect_px": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 430,
+          "duration_ms": 75,
+          "bbox_local_px": [
+            9,
+            9,
+            55,
+            48
+          ]
+        },
+        {
+          "index": 7,
+          "rect_px": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 505,
+          "duration_ms": 65,
+          "bbox_local_px": null
+        }
+      ],
+      "total_duration_ms": 570,
+      "loop": false,
+      "clear_frame_index": 7,
+      "clear_on_finish": true,
+      "visual_only": true
+    },
+    {
+      "key": "stop",
+      "label_ja": "止める",
+      "description_ja": "回る歯車を左右の爪が挟み止める",
+      "path": "Art/fx/gear_stop_8f.png",
+      "size_px": [
+        512,
+        64
+      ],
+      "sha256": "66bbd3578db7924180a904a08a6edfe668691b2123610c22b1e3879560bbb231",
+      "anchor_px": [
+        32,
+        32
+      ],
+      "frame_count": 8,
+      "frames": [
+        {
+          "index": 0,
+          "rect_px": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 0,
+          "duration_ms": 55,
+          "bbox_local_px": [
+            25,
+            25,
+            40,
+            40
+          ]
+        },
+        {
+          "index": 1,
+          "rect_px": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 55,
+          "duration_ms": 60,
+          "bbox_local_px": [
+            12,
+            17,
+            53,
+            48
+          ]
+        },
+        {
+          "index": 2,
+          "rect_px": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 115,
+          "duration_ms": 70,
+          "bbox_local_px": [
+            17,
+            17,
+            48,
+            48
+          ]
+        },
+        {
+          "index": 3,
+          "rect_px": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 185,
+          "duration_ms": 85,
+          "bbox_local_px": [
+            16,
+            17,
+            49,
+            48
+          ]
+        },
+        {
+          "index": 4,
+          "rect_px": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 270,
+          "duration_ms": 80,
+          "bbox_local_px": [
+            13,
+            15,
+            52,
+            51
+          ]
+        },
+        {
+          "index": 5,
+          "rect_px": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 350,
+          "duration_ms": 80,
+          "bbox_local_px": [
+            11,
+            12,
+            55,
+            54
+          ]
+        },
+        {
+          "index": 6,
+          "rect_px": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 430,
+          "duration_ms": 75,
+          "bbox_local_px": [
+            14,
+            21,
+            51,
+            44
+          ]
+        },
+        {
+          "index": 7,
+          "rect_px": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 505,
+          "duration_ms": 65,
+          "bbox_local_px": null
+        }
+      ],
+      "total_duration_ms": 570,
+      "loop": false,
+      "clear_frame_index": 7,
+      "clear_on_finish": true,
+      "visual_only": true
+    },
+    {
+      "key": "field",
+      "label_ja": "場の操作",
+      "description_ja": "二つの結晶が軌道上で位置を交換する",
+      "path": "Art/fx/gear_field_8f.png",
+      "size_px": [
+        512,
+        64
+      ],
+      "sha256": "74ace8168bb6285755739e89fdcd963a374e2fbdda120448ccfde1077f7b9bf4",
+      "anchor_px": [
+        32,
+        32
+      ],
+      "frame_count": 8,
+      "frames": [
+        {
+          "index": 0,
+          "rect_px": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 0,
+          "duration_ms": 55,
+          "bbox_local_px": [
+            25,
+            25,
+            40,
+            40
+          ]
+        },
+        {
+          "index": 1,
+          "rect_px": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 55,
+          "duration_ms": 60,
+          "bbox_local_px": [
+            11,
+            14,
+            54,
+            51
+          ]
+        },
+        {
+          "index": 2,
+          "rect_px": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 115,
+          "duration_ms": 70,
+          "bbox_local_px": [
+            12,
+            15,
+            53,
+            50
+          ]
+        },
+        {
+          "index": 3,
+          "rect_px": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 185,
+          "duration_ms": 85,
+          "bbox_local_px": [
+            15,
+            15,
+            50,
+            50
+          ]
+        },
+        {
+          "index": 4,
+          "rect_px": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 270,
+          "duration_ms": 80,
+          "bbox_local_px": [
+            13,
+            12,
+            52,
+            53
+          ]
+        },
+        {
+          "index": 5,
+          "rect_px": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 350,
+          "duration_ms": 80,
+          "bbox_local_px": [
+            11,
+            11,
+            55,
+            54
+          ]
+        },
+        {
+          "index": 6,
+          "rect_px": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 430,
+          "duration_ms": 75,
+          "bbox_local_px": [
+            15,
+            13,
+            50,
+            52
+          ]
+        },
+        {
+          "index": 7,
+          "rect_px": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 505,
+          "duration_ms": 65,
+          "bbox_local_px": null
+        }
+      ],
+      "total_duration_ms": 570,
+      "loop": false,
+      "clear_frame_index": 7,
+      "clear_on_finish": true,
+      "visual_only": true
+    },
+    {
+      "key": "edged",
+      "label_ja": "両刃",
+      "description_ja": "真鍮の上昇と薔薇色の反動が逆向きに走る",
+      "path": "Art/fx/gear_edged_8f.png",
+      "size_px": [
+        512,
+        64
+      ],
+      "sha256": "64bee9dc95581c86ddd15c21c1df6a515ae0a520f21843f8ce56846d583994a8",
+      "anchor_px": [
+        32,
+        32
+      ],
+      "frame_count": 8,
+      "frames": [
+        {
+          "index": 0,
+          "rect_px": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 0,
+          "duration_ms": 55,
+          "bbox_local_px": [
+            25,
+            25,
+            40,
+            40
+          ]
+        },
+        {
+          "index": 1,
+          "rect_px": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 55,
+          "duration_ms": 60,
+          "bbox_local_px": [
+            18,
+            21,
+            48,
+            48
+          ]
+        },
+        {
+          "index": 2,
+          "rect_px": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 115,
+          "duration_ms": 70,
+          "bbox_local_px": [
+            17,
+            21,
+            48,
+            48
+          ]
+        },
+        {
+          "index": 3,
+          "rect_px": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 185,
+          "duration_ms": 85,
+          "bbox_local_px": [
+            16,
+            18,
+            49,
+            48
+          ]
+        },
+        {
+          "index": 4,
+          "rect_px": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 270,
+          "duration_ms": 80,
+          "bbox_local_px": [
+            13,
+            15,
+            52,
+            51
+          ]
+        },
+        {
+          "index": 5,
+          "rect_px": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 350,
+          "duration_ms": 80,
+          "bbox_local_px": [
+            11,
+            12,
+            55,
+            54
+          ]
+        },
+        {
+          "index": 6,
+          "rect_px": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 430,
+          "duration_ms": 75,
+          "bbox_local_px": [
+            17,
+            9,
+            49,
+            57
+          ]
+        },
+        {
+          "index": 7,
+          "rect_px": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "start_ms": 505,
+          "duration_ms": 65,
+          "bbox_local_px": null
+        }
+      ],
+      "total_duration_ms": 570,
+      "loop": false,
+      "clear_frame_index": 7,
+      "clear_on_finish": true,
+      "visual_only": true
+    }
+  ],
+  "box_states": [
+    {
+      "index": 0,
+      "key": "empty",
+      "path": "Art/ui/gear_box_0.png",
+      "size_px": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        32
+      ],
+      "sha256": "713db31adb48b542d7c5b8da38328be111a49d4448a4ad2435a62d61101d062e",
+      "bbox_local_px": [
+        13,
+        18,
+        52,
+        52
+      ],
+      "static": true,
+      "animation_duration_ms": null,
+      "layer_mode": "full UI sprite, replace previous state, never stack",
+      "state_meaning": "visual intensity stage 0"
+    },
+    {
+      "index": 1,
+      "key": "trace",
+      "path": "Art/ui/gear_box_1.png",
+      "size_px": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        32
+      ],
+      "sha256": "2fe36a62c9fc777e312311819bf6be31228785f502479b399068a34cb29cbe17",
+      "bbox_local_px": [
+        13,
+        18,
+        52,
+        52
+      ],
+      "static": true,
+      "animation_duration_ms": null,
+      "layer_mode": "full UI sprite, replace previous state, never stack",
+      "state_meaning": "visual intensity stage 1"
+    },
+    {
+      "index": 2,
+      "key": "ready",
+      "path": "Art/ui/gear_box_2.png",
+      "size_px": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        32
+      ],
+      "sha256": "dfe4bb945d9121d2b840af78393d9f7f489dcc7dc67a0bd762ebe3c7de68e8b4",
+      "bbox_local_px": [
+        13,
+        13,
+        52,
+        52
+      ],
+      "static": true,
+      "animation_duration_ms": null,
+      "layer_mode": "full UI sprite, replace previous state, never stack",
+      "state_meaning": "visual intensity stage 2"
+    },
+    {
+      "index": 3,
+      "key": "full",
+      "path": "Art/ui/gear_box_3.png",
+      "size_px": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        32
+      ],
+      "sha256": "128aceae37339dd916658eeeaad22816f9cbcd055467bf622504c0dfa9047233",
+      "bbox_local_px": [
+        13,
+        6,
+        52,
+        52
+      ],
+      "static": true,
+      "animation_duration_ms": null,
+      "layer_mode": "full UI sprite, replace previous state, never stack",
+      "state_meaning": "visual intensity stage 3"
+    }
+  ],
+  "bundle": "B4 gears asset-only delivery",
+  "date": "2026-11-09",
+  "branch": "codex/assets-b4-20261109",
+  "runtime_integration_tested": false,
+  "integration": {
+    "box_thresholds": "Choose thresholds in the current game implementation; not prescribed by this asset bundle.",
+    "audio": "none",
+    "scope": "visual assets only; no gameplay source or derived implementation notes"
+  }
+}
