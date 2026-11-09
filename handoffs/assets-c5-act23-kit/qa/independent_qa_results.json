@@ -1,0 +1,463 @@
+{
+  "review": "independent binary/engine import QA, final corrected models",
+  "glb_count": 16,
+  "glb_errors": 0,
+  "total_triangles": 8236,
+  "fbx_count": 16,
+  "fbx_errors": 0,
+  "godot_version": "4.6.3.stable.official.7d41c59c4",
+  "godot_packed_scene_count": 16,
+  "godot_errors": 0,
+  "original_png_sha_matches": 6,
+  "embedded_rgba_matches": 29,
+  "production_game_verified": false,
+  "gpu_render_verified": false,
+  "assets": [
+    {
+      "sha256": "ac5ad2d2471b968f23a4892faca025805d0699a2236637bab4f8dd70158dd4ae",
+      "triangles": 660,
+      "mesh_instances": 15,
+      "bounds_min": [
+        -1.5,
+        7.450580596923828e-09,
+        -0.6000000238418579
+      ],
+      "bounds_max": [
+        1.5,
+        1.3099999986588955,
+        0.6000000238418579
+      ],
+      "dimensions_xyz": [
+        3.0,
+        1.309999991208315,
+        1.2000000476837158
+      ],
+      "minimum_triangle_area": 0.00012470780226563007,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act2/act2_gallery_section.glb"
+    },
+    {
+      "sha256": "c98c74fd9a96190092f1b1f4a812567f32a34daa23287f0d575b83b21628b3c9",
+      "triangles": 476,
+      "mesh_instances": 13,
+      "bounds_min": [
+        -1.649999976158142,
+        0.0,
+        -0.32499998807907104
+      ],
+      "bounds_max": [
+        1.649999976158142,
+        3.2999999076128006,
+        0.32499998807907104
+      ],
+      "dimensions_xyz": [
+        3.299999952316284,
+        3.2999999076128006,
+        0.6499999761581421
+      ],
+      "minimum_triangle_area": 0.00012470759578905,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act2/act2_mine_portal.glb"
+    },
+    {
+      "sha256": "3d5c7888d7346a1de6582d2c73ce4b0ab474013973f7368608a918e87eb4d15b",
+      "triangles": 760,
+      "mesh_instances": 26,
+      "bounds_min": [
+        -2.0,
+        0.0,
+        -0.6774558707344417
+      ],
+      "bounds_max": [
+        2.0,
+        0.2449999935925007,
+        0.6774558707344417
+      ],
+      "dimensions_xyz": [
+        4.0,
+        0.2449999935925007,
+        1.3549117414688834
+      ],
+      "minimum_triangle_area": 2.1650615307279806e-05,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act2/act2_rail_segment.glb"
+    },
+    {
+      "sha256": "06117c87378d8bbe462186aee155eaa56477cace91158870717682326533b6fd",
+      "triangles": 236,
+      "mesh_instances": 7,
+      "bounds_min": [
+        -2.0,
+        0.0,
+        -0.2487499937415123
+      ],
+      "bounds_max": [
+        2.0,
+        0.44999998807907104,
+        0.2487500210249209
+      ],
+      "dimensions_xyz": [
+        4.0,
+        0.44999998807907104,
+        0.4975000147664332
+      ],
+      "minimum_triangle_area": 0.00012470759578905,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act2/act2_timber_beam.glb"
+    },
+    {
+      "sha256": "116e9913b1f25e4fb9e4eac856031c01795700369f42a8d2f7e086b0b3731256",
+      "triangles": 172,
+      "mesh_instances": 5,
+      "bounds_min": [
+        -0.7950000166893005,
+        0.0,
+        -0.173750060333427
+      ],
+      "bounds_max": [
+        0.7950000166893005,
+        1.5799999684095383,
+        0.17375009322228874
+      ],
+      "dimensions_xyz": [
+        1.590000033378601,
+        1.5799999684095383,
+        0.34750015355571573
+      ],
+      "minimum_triangle_area": 0.00012470757643187963,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act2/act2_timber_brace.glb"
+    },
+    {
+      "sha256": "fedad18651708f66a81cbe4ec6a25c1cf49cc4c4c72d4745cfe3b7face706b4a",
+      "triangles": 340,
+      "mesh_instances": 11,
+      "bounds_min": [
+        -0.4749999940395355,
+        0.0,
+        -0.375
+      ],
+      "bounds_max": [
+        0.4749999940395355,
+        4.540000095963478,
+        0.375
+      ],
+      "dimensions_xyz": [
+        0.949999988079071,
+        4.540000095963478,
+        0.75
+      ],
+      "minimum_triangle_area": 0.00012470756997948952,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act2/act2_timber_post.glb"
+    },
+    {
+      "sha256": "83be98912a8348b5e2bfeb3d3cf2c1b9fc12e32dbbd13e94f56b82690cec3657",
+      "triangles": 308,
+      "mesh_instances": 7,
+      "bounds_min": [
+        -0.75,
+        2.0893666341503803e-07,
+        -1.0268330190890504
+      ],
+      "bounds_max": [
+        0.75,
+        1.125219374574689,
+        1.0268330190890504
+      ],
+      "dimensions_xyz": [
+        1.5,
+        1.1252191656380255,
+        2.053666038178101
+      ],
+      "minimum_triangle_area": 0.0002805923615258271,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act2/act2_timber_stairs.glb"
+    },
+    {
+      "sha256": "a6c9b500017e00a12a5115d696ddb48dd3a15c9e2663eb7acb35113289f18f2e",
+      "triangles": 2568,
+      "mesh_instances": 26,
+      "bounds_min": [
+        -0.9950000938736379,
+        0.0,
+        -0.699999988079071
+      ],
+      "bounds_max": [
+        0.9950000654732305,
+        1.6900000359689313,
+        0.699999988079071
+      ],
+      "dimensions_xyz": [
+        1.9900001593468684,
+        1.6900000359689313,
+        1.399999976158142
+      ],
+      "minimum_triangle_area": 0.0002053865080105781,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act2/act2_winch.glb"
+    },
+    {
+      "sha256": "f77febb551d85911f8974483de65d9e53a809c5b465e5cd1943ee9264a0fd757",
+      "triangles": 616,
+      "mesh_instances": 14,
+      "bounds_min": [
+        -0.5849999785423279,
+        0.0,
+        -0.5849999785423279
+      ],
+      "bounds_max": [
+        0.5849999785423279,
+        7.799999907612801,
+        0.5849999785423279
+      ],
+      "dimensions_xyz": [
+        1.1699999570846558,
+        7.799999907612801,
+        1.1699999570846558
+      ],
+      "minimum_triangle_area": 1.3580695125381368e-05,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act3/act3_ancient_pillar.glb"
+    },
+    {
+      "sha256": "800d7d3a613ad7c2d90b4b1336d622230249d72a233806dcf26928c5fda1e363",
+      "triangles": 584,
+      "mesh_instances": 22,
+      "bounds_min": [
+        -2.5000000596046448,
+        0.0,
+        -0.550000011920929
+      ],
+      "bounds_max": [
+        2.5000000596046448,
+        6.089953184127808,
+        0.550000011920929
+      ],
+      "dimensions_xyz": [
+        5.0000001192092896,
+        6.089953184127808,
+        1.100000023841858
+      ],
+      "minimum_triangle_area": 0.0005412657053014993,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act3/act3_arch_full.glb"
+    },
+    {
+      "sha256": "2cb581f322b0df832d002be35f7ef4ada0b91766846a4b43d6487903fe3b3241",
+      "triangles": 292,
+      "mesh_instances": 11,
+      "bounds_min": [
+        -1.2450501322746277,
+        0.0,
+        -0.550000011920929
+      ],
+      "bounds_max": [
+        1.245049986988306,
+        6.089953184127808,
+        0.550000011920929
+      ],
+      "dimensions_xyz": [
+        2.4901001192629337,
+        6.089953184127808,
+        1.100000023841858
+      ],
+      "minimum_triangle_area": 0.0005412657053014993,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act3/act3_arch_half.glb"
+    },
+    {
+      "sha256": "e927e583f7f2c3ae43546e2415f77f3e3885725762c362c9a0c7830891a58d8c",
+      "triangles": 188,
+      "mesh_instances": 5,
+      "bounds_min": [
+        -0.5799999833106995,
+        0.0,
+        -0.5799999833106995
+      ],
+      "bounds_max": [
+        0.5799999833106995,
+        3.5999999046325684,
+        0.5799999833106995
+      ],
+      "dimensions_xyz": [
+        1.159999966621399,
+        3.5999999046325684,
+        1.159999966621399
+      ],
+      "minimum_triangle_area": 0.0005412661354609877,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act3/act3_broken_pillar.glb"
+    },
+    {
+      "sha256": "ab7a236bda5fc443c3d6d2fad890c9fa97ecfb088c0eda6d38caa48bc8f76685",
+      "triangles": 288,
+      "mesh_instances": 24,
+      "bounds_min": [
+        -1.2999999523162842,
+        0.0,
+        -1.2999999523162842
+      ],
+      "bounds_max": [
+        1.2999999523162842,
+        0.699999988079071,
+        1.2999999523162842
+      ],
+      "dimensions_xyz": [
+        2.5999999046325684,
+        0.699999988079071,
+        2.5999999046325684
+      ],
+      "minimum_triangle_area": 0.015607220348769602,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act3/act3_channel_corner.glb"
+    },
+    {
+      "sha256": "b768bc1514662352073f87d7a1e924a2d61cca69c7fe4d63daefccbe5af5e7b6",
+      "triangles": 396,
+      "mesh_instances": 9,
+      "bounds_min": [
+        -2.0,
+        0.0,
+        -0.9000000134110451
+      ],
+      "bounds_max": [
+        2.0,
+        0.699999988079071,
+        0.9000000134110451
+      ],
+      "dimensions_xyz": [
+        4.0,
+        0.699999988079071,
+        1.8000000268220901
+      ],
+      "minimum_triangle_area": 0.0002805923615258271,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act3/act3_channel_straight.glb"
+    },
+    {
+      "sha256": "d2307df78c06ab00e43d9ddfcd0872b2cccbe2e0498c3a6e1b8c66cce84635e5",
+      "triangles": 220,
+      "mesh_instances": 5,
+      "bounds_min": [
+        -1.600000023841858,
+        0.0,
+        -0.18000000715255737
+      ],
+      "bounds_max": [
+        1.600000023841858,
+        0.6799999922513962,
+        0.18000000715255737
+      ],
+      "dimensions_xyz": [
+        3.200000047683716,
+        0.6799999922513962,
+        0.36000001430511475
+      ],
+      "minimum_triangle_area": 0.0005412655977616538,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act3/act3_parapet_section.glb"
+    },
+    {
+      "sha256": "2b43b9d537f1515fe2cfebf9364f71db8b15e9da29652a20f0035bd71ce01887",
+      "triangles": 132,
+      "mesh_instances": 3,
+      "bounds_min": [
+        -1.5,
+        0.0,
+        -0.6800000071525574
+      ],
+      "bounds_max": [
+        1.5,
+        0.75,
+        0.6800000071525574
+      ],
+      "dimensions_xyz": [
+        3.0,
+        0.75,
+        1.3600000143051147
+      ],
+      "minimum_triangle_area": 0.0004191555338088607,
+      "negative_volume_primitives": 0,
+      "welded_boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "errors": [],
+      "warnings": [],
+      "file": "models/act3/act3_stone_stairs.glb"
+    }
+  ],
+  "visual_review": {
+    "status": "accepted_as_standalone_asset_candidate",
+    "renderer": "Blender Cycles catalogs, not production Godot GPU",
+    "previews": [
+      {
+        "file": "previews/act2_catalog.png",
+        "sha256": "dcb3ac298b77d0ede7910d625cf95d0ec9ec684c4fb559096a9ee2b2d13d8f18"
+      },
+      {
+        "file": "previews/act3_catalog.png",
+        "sha256": "b1baba394dffa01e9f2d51beba7b06def02369e7fe82c1f15685b55ae2b2d2b6"
+      }
+    ]
+  }
+}

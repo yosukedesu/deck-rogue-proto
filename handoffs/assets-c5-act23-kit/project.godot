@@ -1,0 +1,12 @@
+; C5 asset-only catalogue, not production game integration.
+config_version=5
+[application]
+config/name="DeckRogue C5 Modular 3D Catalogue"
+run/main_scene="res://godot/catalog.tscn"
+[display]
+window/size/viewport_width=1440
+window/size/viewport_height=900
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=true

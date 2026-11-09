@@ -1,0 +1,50 @@
+[
+  {
+    "file": "textures/act2_side_timber_a.png",
+    "source_repository_path": "unity/Assets/Resources/Art/stage/act2/tiles/side_timber_a.png",
+    "source_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+    "source_git_blob": "1d50e9a6444f0757e653a6410d768920dd978d38",
+    "sha256": "86eb5b93e0d8db5d2645f041d0bba3dd4540591258df781b935d9c0d5d7330d9",
+    "treatment": "byte-for-byte copy; unedited"
+  },
+  {
+    "file": "textures/act2_side_plank_a.png",
+    "source_repository_path": "unity/Assets/Resources/Art/stage/act2/tiles/side_plank_a.png",
+    "source_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+    "source_git_blob": "24592fad1302f280c428df3bc223dac7ecc0b349",
+    "sha256": "f243cbca1f7f225840509447a5c99f4080ec5231751589d40e6afb6a057c78f0",
+    "treatment": "byte-for-byte copy; unedited"
+  },
+  {
+    "file": "textures/act2_side_iron_a.png",
+    "source_repository_path": "unity/Assets/Resources/Art/stage/act2/tiles/side_iron_a.png",
+    "source_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+    "source_git_blob": "cba5767e37c79354262022572af82ca64f67e73e",
+    "sha256": "1641f651e89e991f5551997f6b4704affcbdd5eb75587bd06ea91d35af2e26ba",
+    "treatment": "byte-for-byte copy; unedited"
+  },
+  {
+    "file": "textures/act3_side_pillar_a.png",
+    "source_repository_path": "unity/Assets/Resources/Art/stage/act3/tiles/side_pillar_a.png",
+    "source_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+    "source_git_blob": "3c720777ca99c37f2777b3ffd27196bdfcea2ef5",
+    "sha256": "76cb933d983a6662c26f7f07155311198bbae857901d29c234acf4b6fe391a37",
+    "treatment": "byte-for-byte copy; unedited"
+  },
+  {
+    "file": "textures/act3_side_step_a.png",
+    "source_repository_path": "unity/Assets/Resources/Art/stage/act3/tiles/side_step_a.png",
+    "source_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+    "source_git_blob": "bf153fc2cb658b3e94f8416505c803f909a133bb",
+    "sha256": "fbec3f74df7c4f1a776d7562dac5cfeb2811351065e102ba939d3bf1d884151a",
+    "treatment": "byte-for-byte copy; unedited"
+  },
+  {
+    "file": "textures/act3_side_wall_a.png",
+    "source_repository_path": "unity/Assets/Resources/Art/stage/act3/tiles/side_wall_a.png",
+    "source_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+    "source_git_blob": "d8a82f5b0b5b62254f6be60ee2be4e5385b64843",
+    "sha256": "fab2621ee8ad181d39710f2d92a0578fc1e8282cb199469f452ad5d5b65436e9",
+    "treatment": "byte-for-byte copy; unedited"
+  }
+]

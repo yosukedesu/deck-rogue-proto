@@ -1,0 +1,11 @@
+{
+  "bundle": "C5 Act2/Act3 modular 3D kit",
+  "date": "2026-11-08",
+  "geometry": "Original deterministic Blender geometry authored for this task. No extracted third-party game models.",
+  "textures": "Six existing project textures copied byte-for-byte, provenance in source/texture_provenance.json. Original project asset rights remain unchanged; not represented as a new CC0 license.",
+  "tools": ["Blender 4.3.2", "Godot 4.6.3 (headless import verification)"],
+  "source_reference": "docs/dot-asset-backlog-2026-11-02.md C5; docs/design/hd2d-stage2/contracts.md; act2_layout.json; act3_layout.json",
+  "source_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "production_integration": false,
+  "preview_disclosure": "Blender rendered catalogue; not a production Godot screenshot. Preview lights/floor/camera/labels are absent from standalone exports."
+}

@@ -1,0 +1,629 @@
+{
+  "schema": "deckrogue.c5.modular3d.v1",
+  "bundle": "C5 Act2+Act3 modular stage parts",
+  "created": "2026-11-08",
+  "branch": "codex/assets-c5-20261108",
+  "unit": "metre",
+  "axes": "Y-up, X right, -Z forward after GLB export; Blender source Z-up",
+  "pivot": "ground AABB centre for each standalone model",
+  "texels_per_metre": 25,
+  "texture_resolution_px": [
+    64,
+    64
+  ],
+  "material_filter": "nearest + nearest mipmap in GLB; verify game shader override",
+  "asset_count": 16,
+  "production_game_integrated": false,
+  "godot_standalone_import_verified": true,
+  "collision_meshes": false,
+  "animation": false,
+  "lod": "not authored; Godot import LOD policy belongs to integrator",
+  "modules": [
+    {
+      "id": "act2_timber_post",
+      "act": 2,
+      "label_ja": "坑木の支柱",
+      "glb": "models/act2/act2_timber_post.glb",
+      "fbx": "models/act2/act2_timber_post.fbx",
+      "dimensions_m_xyz": [
+        0.95,
+        4.54,
+        0.75
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 340,
+      "mesh_count": 11,
+      "materials": [
+        "A2_Iron",
+        "A2_Timber"
+      ],
+      "notes": "Column shaft .5×.5×4.4m plus cap. Max cap height 4.54m. Display stand is not included.",
+      "connections": [],
+      "sha256": {
+        "glb": "fedad18651708f66a81cbe4ec6a25c1cf49cc4c4c72d4745cfe3b7face706b4a",
+        "fbx": "e4bb292ce2428a2b6aac9b35bd5b08f7c95665ba232e41690f1a94c169b3086d"
+      }
+    },
+    {
+      "id": "act2_timber_beam",
+      "act": 2,
+      "label_ja": "坑木の梁",
+      "glb": "models/act2/act2_timber_beam.glb",
+      "fbx": "models/act2/act2_timber_beam.fbx",
+      "dimensions_m_xyz": [
+        4.0,
+        0.45,
+        0.4975
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 236,
+      "mesh_count": 7,
+      "materials": [
+        "A2_Iron",
+        "A2_Timber"
+      ],
+      "notes": "4m reusable section, rather than baking the scene-wide 8.9m beam.",
+      "connections": [
+        {
+          "point_m_xyz": [
+            -2,
+            0.225,
+            0
+          ],
+          "type": "beam_end"
+        },
+        {
+          "point_m_xyz": [
+            2,
+            0.225,
+            0
+          ],
+          "type": "beam_end"
+        }
+      ],
+      "sha256": {
+        "glb": "06117c87378d8bbe462186aee155eaa56477cace91158870717682326533b6fd",
+        "fbx": "0bc0294697d4890c0aba45b28bc515fdb4c5f1553c83f1653b01908713e01bbc"
+      }
+    },
+    {
+      "id": "act2_timber_brace",
+      "act": 2,
+      "label_ja": "坑木の筋交い",
+      "glb": "models/act2/act2_timber_brace.glb",
+      "fbx": "models/act2/act2_timber_brace.fbx",
+      "dimensions_m_xyz": [
+        1.59,
+        1.58,
+        0.3475
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 172,
+      "mesh_count": 5,
+      "materials": [
+        "A2_Iron",
+        "A2_Timber"
+      ],
+      "notes": "Diagonal brace supplied as its own solid module; ground-pivot describes its AABB, not an attachment plane.",
+      "connections": [],
+      "sha256": {
+        "glb": "116e9913b1f25e4fb9e4eac856031c01795700369f42a8d2f7e086b0b3731256",
+        "fbx": "30d0c246f61b99334981b23ac878ca7ffe551b406af1e9c64ae68723601c2c16"
+      }
+    },
+    {
+      "id": "act2_mine_portal",
+      "act": 2,
+      "label_ja": "坑口の木枠",
+      "glb": "models/act2/act2_mine_portal.glb",
+      "fbx": "models/act2/act2_mine_portal.fbx",
+      "dimensions_m_xyz": [
+        3.3,
+        3.3,
+        0.65
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 476,
+      "mesh_count": 13,
+      "materials": [
+        "A2_Iron",
+        "A2_Timber"
+      ],
+      "notes": "Open timber portal, not a sealed black card or cave wall. Opening 2.2m wide.",
+      "connections": [],
+      "sha256": {
+        "glb": "c98c74fd9a96190092f1b1f4a812567f32a34daa23287f0d575b83b21628b3c9",
+        "fbx": "1e44f4d18f46f7d96318f5270ed23e0fc0463a89b49e95160b9ccef92329189c"
+      }
+    },
+    {
+      "id": "act2_rail_segment",
+      "act": 2,
+      "label_ja": "枕木付きレール",
+      "glb": "models/act2/act2_rail_segment.glb",
+      "fbx": "models/act2/act2_rail_segment.fbx",
+      "dimensions_m_xyz": [
+        4.0,
+        0.245,
+        1.35491
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 760,
+      "mesh_count": 26,
+      "materials": [
+        "A2_Iron",
+        "A2_Timber"
+      ],
+      "notes": "4m along local X. Gauge .9m; 4 irregular sleepers. No scene-wide 56m/60m geometry.",
+      "connections": [
+        {
+          "point_m_xyz": [
+            -2,
+            0,
+            0
+          ],
+          "type": "track_end"
+        },
+        {
+          "point_m_xyz": [
+            2,
+            0,
+            0
+          ],
+          "type": "track_end"
+        }
+      ],
+      "sha256": {
+        "glb": "3d5c7888d7346a1de6582d2c73ce4b0ab474013973f7368608a918e87eb4d15b",
+        "fbx": "81cad80c86ccd18a7546715e4c7ee2866b2b99d1a44a405e2c61acf096e3159c"
+      }
+    },
+    {
+      "id": "act2_winch",
+      "act": 2,
+      "label_ja": "坑道の巻上機",
+      "glb": "models/act2/act2_winch.glb",
+      "fbx": "models/act2/act2_winch.fbx",
+      "dimensions_m_xyz": [
+        1.99,
+        1.69,
+        1.4
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 2568,
+      "mesh_count": 26,
+      "materials": [
+        "A2_Iron",
+        "A2_Rope",
+        "A2_Timber"
+      ],
+      "notes": "Static prop. Crank and barrel are authored geometry, no skeleton or mechanical animation. Size inferred, not an existing 3D asset replacement.",
+      "connections": [],
+      "sha256": {
+        "glb": "a6c9b500017e00a12a5115d696ddb48dd3a15c9e2663eb7acb35113289f18f2e",
+        "fbx": "8537ff0a054b111bdb40b0eb9e1928a64ad6b1e10688c9e77bf8c2c9fba076e3"
+      }
+    },
+    {
+      "id": "act2_gallery_section",
+      "act": 2,
+      "label_ja": "坑道の歩廊",
+      "glb": "models/act2/act2_gallery_section.glb",
+      "fbx": "models/act2/act2_gallery_section.fbx",
+      "dimensions_m_xyz": [
+        3.0,
+        1.31,
+        1.2
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 660,
+      "mesh_count": 15,
+      "materials": [
+        "A2_Plank",
+        "A2_Timber"
+      ],
+      "notes": "3m modular gallery, width1.2. Floor surface is above ground pivot because underbeams are included. One-sided guardrail.",
+      "connections": [],
+      "sha256": {
+        "glb": "ac5ad2d2471b968f23a4892faca025805d0699a2236637bab4f8dd70158dd4ae",
+        "fbx": "c5728e2826252bc9f639b693e336cbbf7feacbddc7accc8aba9835cbee37e3f0"
+      }
+    },
+    {
+      "id": "act2_timber_stairs",
+      "act": 2,
+      "label_ja": "坑道の木階段",
+      "glb": "models/act2/act2_timber_stairs.glb",
+      "fbx": "models/act2/act2_timber_stairs.fbx",
+      "dimensions_m_xyz": [
+        1.5,
+        1.12522,
+        2.05367
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 308,
+      "mesh_count": 7,
+      "materials": [
+        "A2_Plank",
+        "A2_Timber"
+      ],
+      "notes": "Five open risers, nominal rise .2m/run .4m. Ascends local -Z after Y-up export. Decorative stage prop; no collision mesh.",
+      "connections": [],
+      "sha256": {
+        "glb": "83be98912a8348b5e2bfeb3d3cf2c1b9fc12e32dbbd13e94f56b82690cec3657",
+        "fbx": "950cf227ffd03d08fafb174df8eb7d28053b368636eecff13aabfd1f64657704"
+      }
+    },
+    {
+      "id": "act3_ancient_pillar",
+      "act": 3,
+      "label_ja": "古代都市の柱",
+      "glb": "models/act3/act3_ancient_pillar.glb",
+      "fbx": "models/act3/act3_ancient_pillar.fbx",
+      "dimensions_m_xyz": [
+        1.17,
+        7.8,
+        1.17
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 616,
+      "mesh_count": 14,
+      "materials": [
+        "A3_Brass",
+        "A3_Limestone",
+        "A3_Step"
+      ],
+      "notes": "Monumental pillar: shaft .85m, total authored height7.8m including capital. Separate 3.6m broken variant.",
+      "connections": [],
+      "sha256": {
+        "glb": "f77febb551d85911f8974483de65d9e53a809c5b465e5cd1943ee9264a0fd757",
+        "fbx": "c3f980c9714d044adc12875d5f442237f7717325b6f513d600940981a57ce7e9"
+      }
+    },
+    {
+      "id": "act3_broken_pillar",
+      "act": 3,
+      "label_ja": "折れた古代柱",
+      "glb": "models/act3/act3_broken_pillar.glb",
+      "fbx": "models/act3/act3_broken_pillar.fbx",
+      "dimensions_m_xyz": [
+        1.16,
+        3.6,
+        1.16
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 188,
+      "mesh_count": 5,
+      "materials": [
+        "A3_Limestone",
+        "A3_Step"
+      ],
+      "notes": "3.6m broken pillar with closed irregular fracture; no loose pieces embedded below ground.",
+      "connections": [],
+      "sha256": {
+        "glb": "e927e583f7f2c3ae43546e2415f77f3e3885725762c362c9a0c7830891a58d8c",
+        "fbx": "8055f15b8e3730026f89102928be51de029f2ec2e2e0be2db9213e61b7405f03"
+      }
+    },
+    {
+      "id": "act3_arch_full",
+      "act": 3,
+      "label_ja": "古代の大アーチ",
+      "glb": "models/act3/act3_arch_full.glb",
+      "fbx": "models/act3/act3_arch_full.fbx",
+      "dimensions_m_xyz": [
+        5.0,
+        6.08995,
+        1.1
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 584,
+      "mesh_count": 22,
+      "materials": [
+        "A3_Limestone"
+      ],
+      "notes": "Nominal 5m wide×6m high×1.1m deep; keystone projects .1m above nominal rise. Opening3.3m.",
+      "connections": [],
+      "sha256": {
+        "glb": "800d7d3a613ad7c2d90b4b1336d622230249d72a233806dcf26928c5fda1e363",
+        "fbx": "91d588cedb13d1c996af85c4fb6fd645c5d8b35c4311decfb0118d8113c7218f"
+      }
+    },
+    {
+      "id": "act3_arch_half",
+      "act": 3,
+      "label_ja": "崩れた半アーチ",
+      "glb": "models/act3/act3_arch_half.glb",
+      "fbx": "models/act3/act3_arch_half.fbx",
+      "dimensions_m_xyz": [
+        2.4901,
+        6.08995,
+        1.1
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 292,
+      "mesh_count": 11,
+      "materials": [
+        "A3_Limestone"
+      ],
+      "notes": "Left pier and half arch. Ground-centred independently; use manifest dimensions, not full-arch origin. Cut arch is capped.",
+      "connections": [],
+      "sha256": {
+        "glb": "2cb581f322b0df832d002be35f7ef4ada0b91766846a4b43d6487903fe3b3241",
+        "fbx": "6ade954fcd298e8fb58c9e5e729c1d1001ec7e57604251db34ab57fc69c6ada3"
+      }
+    },
+    {
+      "id": "act3_stone_stairs",
+      "act": 3,
+      "label_ja": "古代都市の石階段",
+      "glb": "models/act3/act3_stone_stairs.glb",
+      "fbx": "models/act3/act3_stone_stairs.fbx",
+      "dimensions_m_xyz": [
+        3.0,
+        0.75,
+        1.36
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 132,
+      "mesh_count": 3,
+      "materials": [
+        "A3_Step"
+      ],
+      "notes": "3m wide, total depth1.36m and height.75m. Three .25m risers. Ascends local -Z after export.",
+      "connections": [],
+      "sha256": {
+        "glb": "2b43b9d537f1515fe2cfebf9364f71db8b15e9da29652a20f0035bd71ce01887",
+        "fbx": "91e23a2256933373e74a175841ff89a0ec9ca0f285613da33e6e13573393236c"
+      }
+    },
+    {
+      "id": "act3_channel_straight",
+      "act": 3,
+      "label_ja": "石造水路・直線",
+      "glb": "models/act3/act3_channel_straight.glb",
+      "fbx": "models/act3/act3_channel_straight.fbx",
+      "dimensions_m_xyz": [
+        4.0,
+        0.7,
+        1.8
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 396,
+      "mesh_count": 9,
+      "materials": [
+        "A3_Step",
+        "A3_Wall"
+      ],
+      "notes": "Dry masonry only. Length4m along X; clear width1.4m, bed top.2m, wall top.7m. No water shader or fluid.",
+      "connections": [
+        {
+          "point_m_xyz": [
+            -2,
+            0.2,
+            0
+          ],
+          "type": "channel_end"
+        },
+        {
+          "point_m_xyz": [
+            2,
+            0.2,
+            0
+          ],
+          "type": "channel_end"
+        }
+      ],
+      "sha256": {
+        "glb": "b768bc1514662352073f87d7a1e924a2d61cca69c7fe4d63daefccbe5af5e7b6",
+        "fbx": "b7befe65c0f4880fd24bc4be175e006a3f5b7cea39460a521582a3a9b8ee800b"
+      }
+    },
+    {
+      "id": "act3_channel_corner",
+      "act": 3,
+      "label_ja": "石造水路・曲がり",
+      "glb": "models/act3/act3_channel_corner.glb",
+      "fbx": "models/act3/act3_channel_corner.fbx",
+      "dimensions_m_xyz": [
+        2.6,
+        0.7,
+        2.6
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 288,
+      "mesh_count": 24,
+      "materials": [
+        "A3_Step",
+        "A3_Wall"
+      ],
+      "notes": "90-degree bend; same1.8m outer/1.4m clear channel. No water. Ground-centred AABB shifts the bend centre.",
+      "connections": [
+        {
+          "point_m_xyz": [
+            0.4,
+            0.2,
+            1.3
+          ],
+          "type": "channel_end",
+          "outward_m_xyz": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "point_m_xyz": [
+            -1.3,
+            0.2,
+            -0.4
+          ],
+          "type": "channel_end",
+          "outward_m_xyz": [
+            -1,
+            0,
+            0
+          ]
+        }
+      ],
+      "sha256": {
+        "glb": "ab7a236bda5fc443c3d6d2fad890c9fa97ecfb088c0eda6d38caa48bc8f76685",
+        "fbx": "580987a38f258e8e9efb72f924c32e16655a5c52e27249f20c89cdd598cd2a50"
+      }
+    },
+    {
+      "id": "act3_parapet_section",
+      "act": 3,
+      "label_ja": "古代都市の胸壁",
+      "glb": "models/act3/act3_parapet_section.glb",
+      "fbx": "models/act3/act3_parapet_section.fbx",
+      "dimensions_m_xyz": [
+        3.2,
+        0.68,
+        0.36
+      ],
+      "pivot_m_xyz": [
+        0,
+        0,
+        0
+      ],
+      "triangles": 220,
+      "mesh_count": 5,
+      "materials": [
+        "A3_Step",
+        "A3_Wall"
+      ],
+      "notes": "3.2m repeatable low parapet. Short side battlements retain battle sightlines. Not a full-height wall.",
+      "connections": [],
+      "sha256": {
+        "glb": "d2307df78c06ab00e43d9ddfcd0872b2cccbe2e0498c3a6e1b8c66cce84635e5",
+        "fbx": "4b476f20e394f19dcd858a59d6b41f0b45ec7f688a9ecb5e16916ebd48988654"
+      }
+    }
+  ],
+  "excluded": [
+    "characters",
+    "portraits",
+    "BGM",
+    "key visual",
+    "src/engine",
+    "src/data",
+    "Unity code",
+    "production stage loaders",
+    "water shader"
+  ],
+  "material_definitions": {
+    "A2_Timber": {
+      "albedo_texture": "act2_side_timber_a.png",
+      "roughness": 0.8600000143051147,
+      "metallic": 0.0,
+      "double_sided": false
+    },
+    "A2_Plank": {
+      "albedo_texture": "act2_side_plank_a.png",
+      "roughness": 0.8600000143051147,
+      "metallic": 0.0,
+      "double_sided": false
+    },
+    "A2_Iron": {
+      "albedo_texture": "act2_side_iron_a.png",
+      "roughness": 0.7599999904632568,
+      "metallic": 0.6000000238418579,
+      "double_sided": false
+    },
+    "A3_Limestone": {
+      "albedo_texture": "act3_side_pillar_a.png",
+      "roughness": 0.8600000143051147,
+      "metallic": 0.0,
+      "double_sided": false
+    },
+    "A3_Step": {
+      "albedo_texture": "act3_side_step_a.png",
+      "roughness": 0.8600000143051147,
+      "metallic": 0.0,
+      "double_sided": false
+    },
+    "A3_Wall": {
+      "albedo_texture": "act3_side_wall_a.png",
+      "roughness": 0.8600000143051147,
+      "metallic": 0.0,
+      "double_sided": false
+    },
+    "A2_Rope": {
+      "albedo_texture": null,
+      "roughness": 0.9700000286102295,
+      "metallic": 0.0,
+      "double_sided": false
+    },
+    "A3_Brass": {
+      "albedo_texture": null,
+      "roughness": 0.6499999761581421,
+      "metallic": 0.75,
+      "double_sided": false
+    }
+  },
+  "godot_version_verified": "4.6.3.stable.official.7d41c59c4",
+  "godot_gpu_render_verified": false,
+  "visual_qa": "independent Blender catalogue review passed; not a production game screenshot",
+  "qa_report": "qa/INDEPENDENT_QA.md"
+}
